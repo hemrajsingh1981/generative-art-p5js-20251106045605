@@ -1,0 +1,43 @@
+name: Build and Deploy to GCS
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  # TODO: Replace with your Google Cloud project ID
+  PROJECT_ID: 'PROJECT_ID_PLACEHOLDER'
+  # TODO: Replace with your GCS bucket name
+  GCS_BUCKET_NAME: 'your-gcs-bucket-name'
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Deploy to GCS
+        uses: google-github-actions/upload-gcs@v2
+        with:
+          # This is a placeholder for GCP_SA_KEY. In a real-world scenario, you should use Workload Identity Federation or a dedicated GCP service account key secret.
+          # See: https://github.com/google-github-actions/upload-gcs#authentication
+          # For simplicity in this example, we are using a placeholder secret.
+          # IMPORTANT: For production, use the recommended authentication methods.
+          $GITHUB_TOKEN: ${{ secrets.GCP_SA_KEY }}
+          destination: ${{ env.GCS_BUCKET_NAME }}
+          source: dist
